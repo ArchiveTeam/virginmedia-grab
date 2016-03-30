@@ -143,7 +143,7 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
       io.stdout:write("\nI give up...\n")
       io.stdout:flush()
       tries = 0
-      if string.match(url, "^https?://[^/]*webspace%.virginmedia%.com") or string.match(url, "^https?://[^/]*pwp%.blueyonder%.co%.uk") or string.match(url, "^https?://[^/]*freespace%.virgin%.net") or string.match(url, "^https?://[^/]*homepage%.ntlworld%.com") then
+      if string.match(url["url"], "^https?://[^/]*webspace%.virginmedia%.com") or string.match(url["url"], "^https?://[^/]*pwp%.blueyonder%.co%.uk") or string.match(url["url"], "^https?://[^/]*freespace%.virgin%.net") or string.match(url["url"], "^https?://[^/]*homepage%.ntlworld%.com") then
         return wget.actions.ABORT
       else
         return wget.actions.EXIT
