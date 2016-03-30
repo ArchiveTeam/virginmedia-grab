@@ -9,6 +9,7 @@ local item_dir = os.getenv('item_dir')
 
 local downloaded = {}
 local addedtolist = {}
+local fromjs = {}
 
 local status_code = nil
 
@@ -64,26 +65,33 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
       check("http:"..newurl)
     elseif string.match(newurl, "^/") then
       check(string.match(url, "^(https?://[^/]+)")..newurl)
+    elseif string.match(url, ".js$") then
+      if (string.match(newurl, "%.[mM][pP]4$") or string.match(newurl, "%.[mM][pP]3$") or string.match(newurl, "%.[jJ][pP][gG]$") or string.match(newurl, "%.[gG][iI][fF]$") or string.match(newurl, "%.[aA][vV][iI]$") or string.match(newurl, "%.[fF][lL][vV]$") or string.match(newurl, "%.[pP][dD][fF]$") or string.match(newurl, "%.[rR][mM]$") or string.match(newurl, "%.[rR][aA]$") or string.match(newurl, "%.[wW][mM][vV]$") or string.match(newurl, "%.[jJ][pP][eE][gG]$") or string.match(newurl, "%.[sS][wW][fF]$")) and not string.match(newurl, "^%.%./") then
+        fromjs[string.match(url, "^(https?://.+/)")..newurl] = true
+        check(string.match(url, "^(https?://.+/)")..newurl)
+      elseif string.match(newurl, "^%.%./") then
+        tempurl = url
+        tempnewurl = newurl
+        while string.match(tempnewurl, "^%.%./") do
+          if not string.match(tempurl, "^https?://[^/]+/$") then
+            tempurl = string.match(tempurl, "^(.*/)[^/]*/")
+          end
+          tempnewurl = string.match(tempnewurl, "^%.%./(.*)")
+        end
+        fromjs[tempurl..tempnewurl] = true
+        check(tempurl..tempnewurl)
+      end
     end
   end
 
   local function checknewshorturl(newurl)
     if not (string.match(newurl, "^https?://") or string.match(newurl, "^/") or string.match(newurl, "^%.%./") or string.match(newurl, "^javascript:") or string.match(newurl, "^mailto:") or string.match(newurl, "^%${")) then
-      if string.match(newurl, '"') then
-        
-    io.stdout:write(newurl.."). Sleeping.\n")
-    io.stdout:flush()
-end
       check(string.match(url, "^(https?://.+/)")..newurl)
     end
   end
   
-  if status_code ~= 404 and (string.match(url, "^https?://[^/]*webspace%.virginmedia%.com") or string.match(url, "^https?://[^/]*pwp%.blueyonder%.co%.uk") or string.match(url, "^https?://[^/]*freespace%.virgin%.net") or string.match(url, "^https?://[^/]*homepage%.ntlworld%.com")) and not (string.match(url, "%.[mM][pP]4$") or string.match(url, "%.[mM][pP]3$") or string.match(url, "%.[jJ][pP][gG]$") or string.match(url, "%.[gG][iI][fF]$") or string.match(url, "%.[aA][vV][iI]$") or string.match(url, "%.[fF][lL][vV]$") or string.match(url, "%.[pP][dD][fF]$") or string.match(url, "%.[rR][mM]$") or string.match(url, "%.[rR][aA]$") or string.match(url, "%.[wW][mM][vV]$") or string.match(url, "%.[jJ][pP][eE][gG]$") or string.match(url, "%.[sS][wW][fF]$")) then
+  if status_code ~= 404 and fromjs[url] ~= true and (string.match(url, "^https?://[^/]*webspace%.virginmedia%.com") or string.match(url, "^https?://[^/]*pwp%.blueyonder%.co%.uk") or string.match(url, "^https?://[^/]*freespace%.virgin%.net") or string.match(url, "^https?://[^/]*homepage%.ntlworld%.com")) and not (string.match(url, "%.[mM][pP]4$") or string.match(url, "%.[mM][pP]3$") or string.match(url, "%.[jJ][pP][gG]$") or string.match(url, "%.[gG][iI][fF]$") or string.match(url, "%.[aA][vV][iI]$") or string.match(url, "%.[fF][lL][vV]$") or string.match(url, "%.[pP][dD][fF]$") or string.match(url, "%.[rR][mM]$") or string.match(url, "%.[rR][aA]$") or string.match(url, "%.[wW][mM][vV]$") or string.match(url, "%.[jJ][pP][eE][gG]$") or string.match(url, "%.[sS][wW][fF]$")) then
     html = read_file(file)
-    if url == "http://homepage.ntlworld.com/lais/" then
-    io.stdout:write(html.."). Sleeping.\n")
-    io.stdout:flush()
-end
     for newurl in string.gmatch(html, '([^"]+)') do
       checknewurl(newurl)
     end
