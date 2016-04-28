@@ -123,13 +123,12 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
   io.stdout:write(url_count .. "=" .. status_code .. " " .. url["url"] .. ".  \n")
   io.stdout:flush()
 
+  if downloaded[url["url"]] == true then
+    return wget.actions.EXIT
+  end
+
   if (status_code >= 200 and status_code <= 399) then
-    if string.match(url.url, "https://") then
-      local newurl = string.gsub(url.url, "https://", "http://")
-      downloaded[newurl] = true
-    else
-      downloaded[url.url] = true
-    end
+    downloaded[url["url"]] = true
   end
   
   if status_code >= 500 or
